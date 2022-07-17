@@ -7,7 +7,7 @@ import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { RGBShiftShader } from "three/examples/jsm/shaders/RGBShiftShader.js";
 import { DotScreenShader } from "three/examples/jsm/shaders/DotScreenShader.js";
 import fragmentShader from "./shaders/outlinesWobble/outlinesWobble.fragment";
-import fragmentShaderHeightMap from "./shaders/oil/oilHeightMap.fragment";
+import fragmentShaderHeightMap from "./shaders/oil/oilHeightMap.fragment.glsl";
 
 // Canvas
 const canvas = document.querySelector("canvas.webgl");
@@ -41,6 +41,7 @@ const vertexShader = `
 const loader = new THREE.TextureLoader();
 const texture = loader.load("/bayer.png");
 const textureNoise = loader.load("/noise.png");
+const textureNoise3D = loader.load("rgba3d_noise_flattened_32_32_32.png");
 texture.minFilter = THREE.NearestFilter;
 texture.magFilter = THREE.NearestFilter;
 texture.wrapS = THREE.RepeatWrapping;
@@ -55,7 +56,8 @@ const uniformsHeightMap = {
   iTime: { value: 0 },
   iTimeDelta: { value: 0 },
   iResolution: { value: new THREE.Vector3() },
-  iChannel0: { value: texture },
+  iMouse: { value: new THREE.Vector3() },
+  iChannel0: { value: textureNoise3D },
   iChannel1: { value: textureNoise },
 };
 
@@ -106,6 +108,17 @@ window.addEventListener("resize", () => {
   composer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   shadowBuffer.setSize(sizes.width, sizes.height);
+});
+window.addEventListener("pointerdown", () => {
+  uniformsHeightMap.iMouse.value.z = 1.0;
+});
+
+window.addEventListener("pointermove", (e) => {
+  uniformsHeightMap.iMouse.value.x = e.clientX;
+  uniformsHeightMap.iMouse.value.y = window.innerHeight - e.clientY;
+});
+window.addEventListener("pointerup", () => {
+  uniformsHeightMap.iMouse.value.z = 0.0;
 });
 
 /**

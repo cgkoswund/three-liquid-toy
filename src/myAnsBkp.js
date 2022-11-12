@@ -75,3 +75,12 @@ TL;DR. Here's how to rotate 3D object "mesh" on keypress. (same but without comm
 
 
 ```;
+
+const sphereRad = 5,
+  radLong = 2,
+  radLat = 4;
+const pX = sphereRad * Math.cos(radLat) * Math.sin(radLong);
+
+const p = sphereRad * Math.cos(radLat) * Math.sin(radLong);
+
+const pY = sphereRad * Math.sin(radLat);
